@@ -1,6 +1,6 @@
 {
   "name": "blind-peer-muxer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Protomux channel muxer for blind peers",
   "main": "index.js",
   "devDependencies": {
