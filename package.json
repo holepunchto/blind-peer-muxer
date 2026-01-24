@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "Protomux channel muxer for blind peers",
   "main": "index.js",
-  "devDependencies": {
-    "lunte": "^1.4.0",
-    "prettier": "^3.8.1",
-    "prettier-config-holepunch": "^2.0.0"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/holepunchto/blind-peer-muxer.git"
@@ -22,6 +17,11 @@
     "url": "https://github.com/holepunchto/blind-peer-muxer/issues"
   },
   "homepage": "https://github.com/holepunchto/blind-peer-muxer",
+  "devDependencies": {
+    "lunte": "^1.4.0",
+    "prettier": "^3.8.1",
+    "prettier-config-holepunch": "^2.0.0"
+  },
   "dependencies": {
     "compact-encoding": "^2.18.0",
     "hyperschema": "^1.19.0",
