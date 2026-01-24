@@ -13,6 +13,7 @@ module.exports = class BlindPeerChannel {
       onclose
     })
     this.wireCores = this.channel.messages[0]
+    this.channel.open()
   }
 
   cork() {
@@ -20,11 +21,15 @@ module.exports = class BlindPeerChannel {
   }
 
   addCores(data) {
-    this.wireCores.send(data)
+    return this.wireCores.send(data)
   }
 
   uncork() {
     this.muxer.uncork()
+  }
+
+  close() {
+    return this.channel.close()
   }
 
   static pair(stream, notify) {
