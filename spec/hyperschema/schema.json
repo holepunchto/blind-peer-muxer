@@ -46,7 +46,7 @@
           "name": "cores",
           "required": true,
           "array": true,
-          "type": "@blind-peer/cores",
+          "type": "@blind-peer/core",
           "version": 1
         }
       ]

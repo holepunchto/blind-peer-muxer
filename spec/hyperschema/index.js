@@ -32,6 +32,9 @@ const encoding0 = {
   }
 }
 
+// @blind-peer/cores.cores
+const encoding1_3 = c.array(encoding0)
+
 // @blind-peer/cores
 const encoding1 = {
   preencode(state, m) {
@@ -61,9 +64,6 @@ const encoding1 = {
     }
   }
 }
-
-// @blind-peer/cores.cores, deferred due to recusive use
-const encoding1_3 = c.array(c.frame(encoding1))
 
 function setVersion(v) {
   version = v

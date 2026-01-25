@@ -37,7 +37,7 @@ blind.register({
     },
     {
       name: 'cores',
-      type: '@blind-peer/cores',
+      type: '@blind-peer/core',
       array: true,
       required: true
     }
