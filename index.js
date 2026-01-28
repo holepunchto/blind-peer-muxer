@@ -16,6 +16,10 @@ module.exports = class BlindPeerChannel {
     this.channel.open()
   }
 
+  get stream() {
+    return this.muxer.stream
+  }
+
   cork() {
     this.muxer.cork()
   }
