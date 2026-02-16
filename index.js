@@ -4,6 +4,8 @@ const Protomux = require('protomux')
 const Cores = getEncoding('@blind-peer/cores')
 
 module.exports = class BlindPeerChannel {
+  static CoresEncoding = Cores
+
   constructor(stream, { oncores = noop, onopen = noop, onclose = noop } = {}) {
     this.muxer = Protomux.from(stream)
     this.channel = this.muxer.createChannel({
