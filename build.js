@@ -20,7 +20,6 @@ legacy.register({
   ]
 })
 
-
 legacy.register({
   name: 'cores',
   fields: [

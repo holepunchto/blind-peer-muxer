@@ -46,10 +46,7 @@ module.exports = class BlindPeerChannel {
   }
 
   close() {
-    return Promise.all([
-      this.legacy.close(),
-      this.channel.close()
-    ])
+    return Promise.all([this.legacy.close(), this.channel.close()])
   }
 
   static pair(stream, notify) {
