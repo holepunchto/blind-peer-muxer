@@ -75,10 +75,11 @@
       "name": "cores",
       "namespace": "blind-peer-v2",
       "compact": false,
-      "flagsPosition": 0,
+      "flagsPosition": 1,
       "fields": [
         {
           "name": "version",
+          "required": true,
           "type": "uint",
           "version": 1
         },

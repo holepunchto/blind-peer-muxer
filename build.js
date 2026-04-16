@@ -69,7 +69,8 @@ blind.register({
   fields: [
     {
       name: 'version',
-      type: 'uint'
+      type: 'uint',
+      required: true
     },
     {
       name: 'referrer',

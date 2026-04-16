@@ -74,32 +74,32 @@ const encoding3_4 = c.array(encoding2)
 // @blind-peer-v2/cores
 const encoding3 = {
   preencode(state, m) {
-    state.end++ // max flag is 8 so always one byte
+    c.uint.preencode(state, m.version)
+    state.end++ // max flag is 4 so always one byte
 
-    if (m.version) c.uint.preencode(state, m.version)
     if (m.referrer) c.fixed32.preencode(state, m.referrer)
     if (m.priority) c.uint.preencode(state, m.priority)
     encoding3_4.preencode(state, m.cores)
   },
   encode(state, m) {
-    const flags =
-      (m.version ? 1 : 0) | (m.referrer ? 2 : 0) | (m.priority ? 4 : 0) | (m.announce ? 8 : 0)
+    const flags = (m.referrer ? 1 : 0) | (m.priority ? 2 : 0) | (m.announce ? 4 : 0)
 
+    c.uint.encode(state, m.version)
     c.uint.encode(state, flags)
 
-    if (m.version) c.uint.encode(state, m.version)
     if (m.referrer) c.fixed32.encode(state, m.referrer)
     if (m.priority) c.uint.encode(state, m.priority)
     encoding3_4.encode(state, m.cores)
   },
   decode(state) {
+    const r0 = c.uint.decode(state)
     const flags = c.uint.decode(state)
 
     return {
-      version: (flags & 1) !== 0 ? c.uint.decode(state) : 0,
-      referrer: (flags & 2) !== 0 ? c.fixed32.decode(state) : null,
-      priority: (flags & 4) !== 0 ? c.uint.decode(state) : 0,
-      announce: (flags & 8) !== 0,
+      version: r0,
+      referrer: (flags & 1) !== 0 ? c.fixed32.decode(state) : null,
+      priority: (flags & 2) !== 0 ? c.uint.decode(state) : 0,
+      announce: (flags & 4) !== 0,
       cores: encoding3_4.decode(state)
     }
   }
