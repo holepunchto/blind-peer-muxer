@@ -38,15 +38,14 @@ const encoding1_3 = c.array(encoding0)
 // @blind-peer/cores
 const encoding1 = {
   preencode(state, m) {
-    state.end++ // max flag is 8 so always one byte
+    state.end++ // max flag is 4 so always one byte
 
     if (m.referrer) c.fixed32.preencode(state, m.referrer)
     if (m.priority) c.uint.preencode(state, m.priority)
     encoding1_3.preencode(state, m.cores)
   },
   encode(state, m) {
-    const flags =
-      (m.referrer ? 1 : 0) | (m.priority ? 2 : 0) | (m.announce ? 4 : 0) | (m.noWakeup ? 8 : 0)
+    const flags = (m.referrer ? 1 : 0) | (m.priority ? 2 : 0) | (m.announce ? 4 : 0)
 
     c.uint.encode(state, flags)
 
@@ -61,8 +60,47 @@ const encoding1 = {
       referrer: (flags & 1) !== 0 ? c.fixed32.decode(state) : null,
       priority: (flags & 2) !== 0 ? c.uint.decode(state) : 0,
       announce: (flags & 4) !== 0,
-      cores: encoding1_3.decode(state),
-      noWakeup: (flags & 8) !== 0
+      cores: encoding1_3.decode(state)
+    }
+  }
+}
+
+// @blind-peer-v2/core
+const encoding2 = encoding0
+
+// @blind-peer-v2/cores.cores
+const encoding3_4 = c.array(encoding2)
+
+// @blind-peer-v2/cores
+const encoding3 = {
+  preencode(state, m) {
+    state.end++ // max flag is 8 so always one byte
+
+    if (m.version) c.uint.preencode(state, m.version)
+    if (m.referrer) c.fixed32.preencode(state, m.referrer)
+    if (m.priority) c.uint.preencode(state, m.priority)
+    encoding3_4.preencode(state, m.cores)
+  },
+  encode(state, m) {
+    const flags =
+      (m.version ? 1 : 0) | (m.referrer ? 2 : 0) | (m.priority ? 4 : 0) | (m.announce ? 8 : 0)
+
+    c.uint.encode(state, flags)
+
+    if (m.version) c.uint.encode(state, m.version)
+    if (m.referrer) c.fixed32.encode(state, m.referrer)
+    if (m.priority) c.uint.encode(state, m.priority)
+    encoding3_4.encode(state, m.cores)
+  },
+  decode(state) {
+    const flags = c.uint.decode(state)
+
+    return {
+      version: (flags & 1) !== 0 ? c.uint.decode(state) : 0,
+      referrer: (flags & 2) !== 0 ? c.fixed32.decode(state) : null,
+      priority: (flags & 4) !== 0 ? c.uint.decode(state) : 0,
+      announce: (flags & 8) !== 0,
+      cores: encoding3_4.decode(state)
     }
   }
 }
@@ -94,6 +132,10 @@ function getEncoding(name) {
       return encoding0
     case '@blind-peer/cores':
       return encoding1
+    case '@blind-peer-v2/core':
+      return encoding2
+    case '@blind-peer-v2/cores':
+      return encoding3
     default:
       throw new Error('Encoder not found ' + name)
   }
