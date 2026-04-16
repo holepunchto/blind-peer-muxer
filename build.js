@@ -40,6 +40,10 @@ blind.register({
       type: '@blind-peer/core',
       array: true,
       required: true
+    },
+    {
+      name: 'noWakeup',
+      type: 'bool'
     }
   ]
 })

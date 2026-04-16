@@ -48,6 +48,11 @@
           "array": true,
           "type": "@blind-peer/core",
           "version": 1
+        },
+        {
+          "name": "noWakeup",
+          "type": "bool",
+          "version": 1
         }
       ]
     }

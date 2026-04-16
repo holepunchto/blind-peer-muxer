@@ -38,14 +38,15 @@ const encoding1_3 = c.array(encoding0)
 // @blind-peer/cores
 const encoding1 = {
   preencode(state, m) {
-    state.end++ // max flag is 4 so always one byte
+    state.end++ // max flag is 8 so always one byte
 
     if (m.referrer) c.fixed32.preencode(state, m.referrer)
     if (m.priority) c.uint.preencode(state, m.priority)
     encoding1_3.preencode(state, m.cores)
   },
   encode(state, m) {
-    const flags = (m.referrer ? 1 : 0) | (m.priority ? 2 : 0) | (m.announce ? 4 : 0)
+    const flags =
+      (m.referrer ? 1 : 0) | (m.priority ? 2 : 0) | (m.announce ? 4 : 0) | (m.noWakeup ? 8 : 0)
 
     c.uint.encode(state, flags)
 
@@ -60,7 +61,8 @@ const encoding1 = {
       referrer: (flags & 1) !== 0 ? c.fixed32.decode(state) : null,
       priority: (flags & 2) !== 0 ? c.uint.decode(state) : 0,
       announce: (flags & 4) !== 0,
-      cores: encoding1_3.decode(state)
+      cores: encoding1_3.decode(state),
+      noWakeup: (flags & 8) !== 0
     }
   }
 }
