@@ -8,24 +8,18 @@ module.exports = class BlindPeerChannel {
   constructor(stream, { oncores = noop, onopen = noop, onclose = noop } = {}) {
     this.muxer = Protomux.from(stream)
 
-    // legacy support for old clients
-    this.legacy = this.muxer.createChannel({
-      protocol: 'blind-peer',
-      messages: [{ encoding: Legacy, onmessage: mapLegacy(oncores) }],
-      onopen,
-      onclose
-    })
-
     this.channel = this.muxer.createChannel({
-      protocol: 'blind-peer-v2',
-      messages: [{ encoding: Cores, onmessage: oncores }],
+      protocol: 'blind-peer',
+      messages: [
+        { encoding: Legacy, onmessage: mapLegacy(oncores) },
+        { encoding: Cores, onmessage: oncores }
+      ],
       onopen,
       onclose
     })
 
     this.wireCores = this.channel.messages[0]
 
-    this.legacy.open()
     this.channel.open()
   }
 
@@ -46,7 +40,7 @@ module.exports = class BlindPeerChannel {
   }
 
   close() {
-    return Promise.all([this.legacy.close(), this.channel.close()])
+    return this.channel.close()
   }
 
   static pair(stream, notify) {
