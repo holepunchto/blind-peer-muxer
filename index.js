@@ -18,7 +18,7 @@ module.exports = class BlindPeerChannel {
       onclose
     })
 
-    this.wireCores = this.channel.messages[0]
+    this.wireCores = this.channel.messages[1]
 
     this.channel.open()
   }
