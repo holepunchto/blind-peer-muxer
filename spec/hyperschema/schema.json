@@ -50,6 +50,68 @@
           "version": 1
         }
       ]
+    },
+    {
+      "name": "core",
+      "namespace": "blind-peer-v2",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "length",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "wakeup",
+          "required": false,
+          "type": "bool",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "cores",
+      "namespace": "blind-peer-v2",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "version",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "referrer",
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "priority",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "announce",
+          "type": "bool",
+          "version": 1
+        },
+        {
+          "name": "cores",
+          "required": true,
+          "array": true,
+          "type": "@blind-peer-v2/core",
+          "version": 1
+        }
+      ]
     }
   ]
 }
