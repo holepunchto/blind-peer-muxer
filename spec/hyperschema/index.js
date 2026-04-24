@@ -66,10 +66,34 @@ const encoding1 = {
 }
 
 // @blind-peer-v2/core
-const encoding2 = encoding0
+const encoding2 = {
+  preencode(state, m) {
+    c.fixed32.preencode(state, m.key)
+    c.uint.preencode(state, m.length)
+    state.end++ // max flag is 1 so always one byte
+  },
+  encode(state, m) {
+    const flags = m.wakeup ? 1 : 0
+
+    c.fixed32.encode(state, m.key)
+    c.uint.encode(state, m.length)
+    c.uint.encode(state, flags)
+  },
+  decode(state) {
+    const r0 = c.fixed32.decode(state)
+    const r1 = c.uint.decode(state)
+    const flags = c.uint.decode(state)
+
+    return {
+      key: r0,
+      length: r1,
+      wakeup: (flags & 1) !== 0
+    }
+  }
+}
 
 // @blind-peer-v2/cores.cores
-const encoding3_4 = c.array(encoding2)
+const encoding3_4 = c.array(c.frame(encoding2))
 
 // @blind-peer-v2/cores
 const encoding3 = {

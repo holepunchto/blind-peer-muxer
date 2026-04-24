@@ -1,6 +1,6 @@
 const Hyperschema = require('hyperschema')
 
-const schema = Hyperschema.from('./spec/hyperschema', { versioned: false })
+const schema = Hyperschema.from('./spec/hyperschema', { versioned: true })
 const legacy = schema.namespace('blind-peer')
 
 legacy.register({
@@ -48,7 +48,6 @@ const blind = schema.namespace('blind-peer-v2')
 
 blind.register({
   name: 'core',
-  compact: true,
   fields: [
     {
       name: 'key',
@@ -58,6 +57,11 @@ blind.register({
     {
       name: 'length',
       type: 'uint',
+      required: true
+    },
+    {
+      name: 'wakeup',
+      type: 'bool',
       required: true
     }
   ]

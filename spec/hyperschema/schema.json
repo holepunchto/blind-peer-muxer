@@ -54,8 +54,8 @@
     {
       "name": "core",
       "namespace": "blind-peer-v2",
-      "compact": true,
-      "flagsPosition": -1,
+      "compact": false,
+      "flagsPosition": 2,
       "fields": [
         {
           "name": "key",
@@ -67,6 +67,12 @@
           "name": "length",
           "required": true,
           "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "wakeup",
+          "required": false,
+          "type": "bool",
           "version": 1
         }
       ]
