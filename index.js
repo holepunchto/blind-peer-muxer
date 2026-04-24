@@ -4,6 +4,8 @@ const Protomux = require('protomux')
 const Legacy = getEncoding('@blind-peer/cores')
 const Cores = getEncoding('@blind-peer-v2/cores')
 
+const ADD_CORES_VERSION = 1
+
 module.exports = class BlindPeerChannel {
   constructor(stream, { oncores = noop, onopen = noop, onclose = noop } = {}) {
     this.muxer = Protomux.from(stream)
@@ -32,6 +34,7 @@ module.exports = class BlindPeerChannel {
   }
 
   addCores(data) {
+    if (data.version === undefined) data.version = ADD_CORES_VERSION
     return this.wireCores.send(data)
   }
 
