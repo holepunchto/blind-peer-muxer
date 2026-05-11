@@ -13,7 +13,9 @@
   ],
   "scripts": {
     "format": "prettier --write .",
-    "lint": "lunte && prettier --check ."
+    "lint": "lunte && prettier --check .",
+    "test": "npm run lint && brittle test/test.js",
+    "test:bare": "brittle-bare test/test.js"
   },
   "author": "Holepunch",
   "license": "Apache-2.0",
@@ -22,6 +24,9 @@
   },
   "homepage": "https://github.com/holepunchto/blind-peer-muxer",
   "devDependencies": {
+    "@hyperswarm/secret-stream": "^6.9.1",
+    "b4a": "^1.8.0",
+    "brittle": "^3.19.1",
     "lunte": "^1.4.0",
     "prettier": "^3.8.1",
     "prettier-config-holepunch": "^2.0.0"
