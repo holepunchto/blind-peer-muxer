@@ -1,18 +1,26 @@
 const { getEncoding } = require('./spec/hyperschema')
+const { BlindPeerRequest: NotificationRequest } = require('blind-push/encodings')
 const Protomux = require('protomux')
 
 const Cores = getEncoding('@blind-peer/cores')
 
 module.exports = class BlindPeerChannel {
-  constructor(stream, { oncores = noop, onopen = noop, onclose = noop } = {}) {
+  constructor(
+    stream,
+    { oncores = noop, onnotification = noop, onopen = noop, onclose = noop } = {}
+  ) {
     this.muxer = Protomux.from(stream)
     this.channel = this.muxer.createChannel({
       protocol: 'blind-peer',
-      messages: [{ encoding: Cores, onmessage: oncores }],
+      messages: [
+        { encoding: Cores, onmessage: oncores },
+        { encoding: NotificationRequest, onmessage: onnotification }
+      ],
       onopen,
       onclose
     })
     this.wireCores = this.channel.messages[0]
+    this.wireNotification = this.channel.messages[1]
     this.channel.open()
   }
 
@@ -26,6 +34,10 @@ module.exports = class BlindPeerChannel {
 
   addCores(data) {
     return this.wireCores.send(data)
+  }
+
+  sendNotification(data) {
+    return this.wireNotification.send(data)
   }
 
   uncork() {
