@@ -32,7 +32,7 @@
     "prettier-config-holepunch": "^2.0.0"
   },
   "dependencies": {
-    "blind-push": "^0.2.3",
+    "blind-push": "^1.0.1",
     "compact-encoding": "^3.0.0",
     "hyperschema": "^1.19.0",
     "protomux": "^3.10.1"
