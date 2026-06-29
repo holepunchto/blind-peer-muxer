@@ -37,7 +37,9 @@ test('sendNotification is received by peer', function (t) {
     destination: {
       key: b4a.alloc(32, 5),
       discoveryKey: b4a.from('destination-discovery-key')
-    }
+    },
+    appId: null,
+    extra: null
   }
 
   const [sender] = setupMuxerPair({
