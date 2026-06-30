@@ -2,7 +2,10 @@ const { getEncoding } = require('./spec/hyperschema')
 const { BlindPeerRequest: NotificationRequest } = require('blind-push/encodings')
 const Protomux = require('protomux')
 
-const Cores = getEncoding('@blind-peer/cores')
+const Legacy = getEncoding('@blind-peer/cores')
+const Cores = getEncoding('@blind-peer-v2/cores')
+
+const ADD_CORES_VERSION = 1
 
 module.exports = class BlindPeerChannel {
   constructor(
@@ -10,17 +13,20 @@ module.exports = class BlindPeerChannel {
     { oncores = noop, onnotification = noop, onopen = noop, onclose = noop } = {}
   ) {
     this.muxer = Protomux.from(stream)
+
     this.channel = this.muxer.createChannel({
       protocol: 'blind-peer',
       messages: [
-        { encoding: Cores, onmessage: oncores },
-        { encoding: NotificationRequest, onmessage: onnotification }
+        { encoding: Legacy, onmessage: mapLegacy(oncores) },
+        { encoding: NotificationRequest, onmessage: onnotification },
+        { encoding: Cores, onmessage: oncores }
       ],
       onopen,
       onclose
     })
-    this.wireCores = this.channel.messages[0]
+
     this.wireNotification = this.channel.messages[1]
+    this.wireCores = this.channel.messages[2]
     this.channel.open()
   }
 
@@ -33,6 +39,7 @@ module.exports = class BlindPeerChannel {
   }
 
   addCores(data) {
+    if (data.version === undefined) data.version = ADD_CORES_VERSION
     return this.wireCores.send(data)
   }
 
@@ -51,6 +58,21 @@ module.exports = class BlindPeerChannel {
   static pair(stream, notify) {
     const muxer = Protomux.from(stream)
     muxer.pair({ protocol: 'blind-peer' }, notify)
+  }
+}
+
+function mapLegacy(fn) {
+  return function (r) {
+    const mapped = {
+      version: 0,
+      wakeup: true,
+      referrer: r.referrer,
+      priority: r.priority,
+      announce: r.announce,
+      cores: r.cores
+    }
+
+    return fn(mapped)
   }
 }
 

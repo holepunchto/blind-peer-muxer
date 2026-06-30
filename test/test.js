@@ -8,12 +8,13 @@ test('addCores is received by peer', function (t) {
   t.plan(1)
 
   const cores = {
+    version: 1,
     referrer: b4a.alloc(32, 1),
     priority: 3,
     announce: true,
     cores: [
-      { key: b4a.alloc(32, 2), length: 42 },
-      { key: b4a.alloc(32, 3), length: 43 }
+      { key: b4a.alloc(32, 2), length: 42, wakeup: false },
+      { key: b4a.alloc(32, 3), length: 43, wakeup: false }
     ]
   }
 
