@@ -65,6 +65,29 @@ const encoding1 = {
   }
 }
 
+// @blind-peer/handshake
+const encoding2 = {
+  preencode(state, m) {
+    state.end++ // max flag is 1 so always one byte
+
+    if (m.blindPeeringVersion) c.string.preencode(state, m.blindPeeringVersion)
+  },
+  encode(state, m) {
+    const flags = m.blindPeeringVersion ? 1 : 0
+
+    c.uint.encode(state, flags)
+
+    if (m.blindPeeringVersion) c.string.encode(state, m.blindPeeringVersion)
+  },
+  decode(state) {
+    const flags = c.uint.decode(state)
+
+    return {
+      blindPeeringVersion: (flags & 1) !== 0 ? c.string.decode(state) : null
+    }
+  }
+}
+
 function setVersion(v) {
   version = v
 }
@@ -92,6 +115,8 @@ function getEncoding(name) {
       return encoding0
     case '@blind-peer/cores':
       return encoding1
+    case '@blind-peer/handshake':
+      return encoding2
     default:
       throw new Error('Encoder not found ' + name)
   }
