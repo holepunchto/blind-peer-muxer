@@ -11,7 +11,8 @@ const HandshakeWrapped = {
   preencode: Handshake.preencode,
   encode: Handshake.encode,
   decode(state) {
-    if (state.start >= state.end) return Handshake.decode({ buffer: Buffer.alloc(1), start: 0, end: 1 })
+    if (state.start >= state.end)
+      return Handshake.decode({ buffer: Buffer.alloc(1), start: 0, end: 1 })
     return Handshake.decode(state)
   }
 }
