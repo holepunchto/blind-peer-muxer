@@ -7,12 +7,11 @@ const Handshake = getEncoding('@blind-peer/handshake')
 // The wrapper makes it work seamlessly if the other side does not have a handshake
 // We default the value to a real decode, which will create a default object based on hyperschema config.
 // This way there is no need to handle special null states by blind-peer-muxer users.
-const defaultHandshakeValue = Handshake.decode({ buffer: Buffer.alloc(1), start: 0, end: 1 })
 const HandshakeWrapped = {
   preencode: Handshake.preencode,
   encode: Handshake.encode,
   decode(state) {
-    if (state.start >= state.end) return defaultHandshakeValue
+    if (state.start >= state.end) return Handshake.decode({ buffer: Buffer.alloc(1), start: 0, end: 1 })
     return Handshake.decode(state)
   }
 }
