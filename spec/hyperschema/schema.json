@@ -50,6 +50,19 @@
           "version": 1
         }
       ]
+    },
+    {
+      "name": "handshake",
+      "namespace": "blind-peer",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "blindPeeringVersion",
+          "type": "string",
+          "version": 1
+        }
+      ]
     }
   ]
 }

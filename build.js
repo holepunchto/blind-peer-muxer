@@ -44,4 +44,14 @@ blind.register({
   ]
 })
 
+blind.register({
+  name: 'handshake',
+  fields: [
+    {
+      name: 'blindPeeringVersion',
+      type: 'string'
+    }
+  ]
+})
+
 Hyperschema.toDisk(schema)
