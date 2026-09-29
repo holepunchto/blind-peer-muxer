@@ -61,6 +61,16 @@
           "name": "blindPeeringVersion",
           "type": "string",
           "version": 1
+        },
+        {
+          "name": "clientName",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "clientVersion",
+          "type": "string",
+          "version": 1
         }
       ]
     }

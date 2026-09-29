@@ -50,6 +50,14 @@ blind.register({
     {
       name: 'blindPeeringVersion',
       type: 'string'
+    },
+    {
+      name: 'clientName',
+      type: 'string'
+    },
+    {
+      name: 'clientVersion',
+      type: 'string'
     }
   ]
 })
