@@ -53,9 +53,7 @@ test('sendNotification is received by peer', function (t) {
 })
 
 test('handshake is stored on the channel', async function (t) {
-  const senderHandshake = {
-    blindPeeringVersion: '1.2.3'
-  }
+  const senderHandshake = { blindPeeringVersion: '1.2.3' }
   const receiverHandshake = {
     blindPeeringVersion: '3.2.1',
     clientName: 'receiver',
@@ -69,7 +67,7 @@ test('handshake is stored on the channel', async function (t) {
   t.ok(await receiver.channel.fullyOpened())
   t.alike(
     receiver.channel.handshake,
-    { ...senderHandshake, clientName: null, clientVersion: null },
+    { blindPeeringVersion: senderHandshake.blindPeeringVersion, ...defaultHandhshake },
     'receiver gets senders handshake'
   )
 })
@@ -78,17 +76,9 @@ test('handshake defaults when neither side sends it', async function (t) {
   const [sender, receiver] = setupMuxerPair()
 
   t.ok(await sender.channel.fullyOpened())
-  t.alike(sender.channel.handshake, {
-    blindPeeringVersion: null,
-    clientName: null,
-    clientVersion: null
-  })
+  t.alike(sender.channel.handshake, defaultHandhshake)
   t.ok(await receiver.channel.fullyOpened())
-  t.alike(receiver.channel.handshake, {
-    blindPeeringVersion: null,
-    clientName: null,
-    clientVersion: null
-  })
+  t.alike(receiver.channel.handshake, defaultHandhshake)
 })
 
 test('sender without handhshake encoding does not break receiver with a handshake encoding', async function (t) {
@@ -104,11 +94,7 @@ test('sender without handhshake encoding does not break receiver with a handshak
   t.ok(await sender.fullyOpened())
   t.ok(await receiver.channel.fullyOpened())
   t.absent(sender.handshake, 'sender ignores handhsake')
-  t.alike(
-    receiver.channel.handshake,
-    { blindPeeringVersion: null, clientName: null, clientVersion: null },
-    'receiver defaulted handshake'
-  )
+  t.alike(receiver.channel.handshake, defaultHandhshake, 'receiver defaulted handshake')
 })
 
 function setupMuxerPair({ oncores, onnotification, senderHandshake, receiverHandshake } = {}) {
@@ -130,3 +116,5 @@ function setupMuxerPair({ oncores, onnotification, senderHandshake, receiverHand
 function replicate(a, b) {
   a.rawStream.pipe(b.rawStream).pipe(a.rawStream)
 }
+
+const defaultHandhshake = { blindPeeringVersion: null, clientName: null, clientVersion: null }
