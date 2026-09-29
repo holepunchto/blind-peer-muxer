@@ -67,7 +67,7 @@ test('handshake is stored on the channel', async function (t) {
   t.ok(await receiver.channel.fullyOpened())
   t.alike(
     receiver.channel.handshake,
-    { blindPeeringVersion: senderHandshake.blindPeeringVersion, ...defaultHandhshake },
+    { ...defaultHandhshake, blindPeeringVersion: senderHandshake.blindPeeringVersion },
     'receiver gets senders handshake'
   )
 })
