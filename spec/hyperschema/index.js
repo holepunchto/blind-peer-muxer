@@ -68,22 +68,29 @@ const encoding1 = {
 // @blind-peer/handshake
 const encoding2 = {
   preencode(state, m) {
-    state.end++ // max flag is 1 so always one byte
+    state.end++ // max flag is 4 so always one byte
 
     if (m.blindPeeringVersion) c.string.preencode(state, m.blindPeeringVersion)
+    if (m.clientName) c.string.preencode(state, m.clientName)
+    if (m.clientVersion) c.string.preencode(state, m.clientVersion)
   },
   encode(state, m) {
-    const flags = m.blindPeeringVersion ? 1 : 0
+    const flags =
+      (m.blindPeeringVersion ? 1 : 0) | (m.clientName ? 2 : 0) | (m.clientVersion ? 4 : 0)
 
     c.uint.encode(state, flags)
 
     if (m.blindPeeringVersion) c.string.encode(state, m.blindPeeringVersion)
+    if (m.clientName) c.string.encode(state, m.clientName)
+    if (m.clientVersion) c.string.encode(state, m.clientVersion)
   },
   decode(state) {
     const flags = c.uint.decode(state)
 
     return {
-      blindPeeringVersion: (flags & 1) !== 0 ? c.string.decode(state) : null
+      blindPeeringVersion: (flags & 1) !== 0 ? c.string.decode(state) : null,
+      clientName: (flags & 2) !== 0 ? c.string.decode(state) : null,
+      clientVersion: (flags & 4) !== 0 ? c.string.decode(state) : null
     }
   }
 }
