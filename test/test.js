@@ -19,7 +19,7 @@ test('addCores is received by peer', function (t) {
   }
 
   const [sender] = setupMuxerPair({
-    oncores(data) {
+    async oncores(data) {
       t.alike(data, cores)
     }
   })
@@ -44,12 +44,63 @@ test('sendNotification is received by peer', function (t) {
   }
 
   const [sender] = setupMuxerPair({
-    onnotification(data) {
+    async onnotification(data) {
       t.alike(data, notification)
     }
   })
 
   sender.sendNotification(notification)
+})
+
+test('requestAddCores resolves with the peer response', async function (t) {
+  const cores = {
+    referrer: b4a.alloc(32, 1),
+    priority: 3,
+    announce: true,
+    cores: [
+      { key: b4a.alloc(32, 2), length: 42 },
+      { key: b4a.alloc(32, 3), length: 43 }
+    ]
+  }
+
+  const response = {
+    cores: [
+      { key: b4a.alloc(32, 2), length: 0, activated: true },
+      { key: b4a.alloc(32, 3), length: 43, activated: false }
+    ]
+  }
+
+  const [sender] = setupMuxerPair({
+    async oncores(data) {
+      t.alike(data, cores)
+      return response
+    }
+  })
+
+  t.alike(await sender.requestAddCores(cores), response)
+})
+
+test('requestSendNotification resolves once handled by peer', async function (t) {
+  const notification = {
+    block: {
+      key: b4a.alloc(32, 4),
+      index: 7
+    },
+    destination: {
+      key: b4a.alloc(32, 5),
+      discoveryKey: b4a.from('destination-discovery-key')
+    },
+    appId: null,
+    extra: null
+  }
+
+  const [sender] = setupMuxerPair({
+    async onnotification(data) {
+      t.alike(data, notification)
+    }
+  })
+
+  t.is(await sender.requestSendNotification(notification), null)
 })
 
 test('handshake is stored on the channel', async function (t) {
@@ -95,6 +146,35 @@ test('sender without handhshake encoding does not break receiver with a handshak
   t.ok(await receiver.channel.fullyOpened())
   t.absent(sender.handshake, 'sender ignores handhsake')
   t.alike(receiver.channel.handshake, defaultHandhshake, 'receiver defaulted handshake')
+})
+
+test('unmapped error codes are received as REQUEST_DESTROYED', async function (t) {
+  const [sender] = setupMuxerPair({
+    async oncores() {
+      const err = new Error('unmapped')
+      err.code = 'SOMETHING_ELSE'
+      throw err
+    }
+  })
+
+  try {
+    await sender.requestAddCores({ cores: [] })
+    t.fail('should reject')
+  } catch (err) {
+    t.is(err.code, 'REQUEST_DESTROYED')
+  }
+})
+
+test('request without a handler is rejected', async function (t) {
+  const [sender, receiver] = setupMuxerPair()
+
+  try {
+    await sender.requestAddCores({ cores: [] })
+    t.fail('should reject')
+  } catch (err) {
+    t.is(err.code, 'REQUEST_NOT_HANDLED')
+  }
+  t.absent(receiver.channel.closed, 'channel stays open')
 })
 
 function setupMuxerPair({ oncores, onnotification, senderHandshake, receiverHandshake } = {}) {

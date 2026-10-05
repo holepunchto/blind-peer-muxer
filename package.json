@@ -35,6 +35,7 @@
     "blind-push": "^1.0.1",
     "compact-encoding": "^3.0.0",
     "hyperschema": "^1.19.0",
-    "protomux": "^3.10.1"
+    "protomux": "^3.10.1",
+    "protomux-request": "^0.1.0"
   }
 }

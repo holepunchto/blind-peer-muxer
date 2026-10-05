@@ -95,6 +95,70 @@ const encoding2 = {
   }
 }
 
+// @blind-peer/core-response
+const encoding3 = {
+  preencode(state, m) {
+    c.fixed32.preencode(state, m.key)
+    c.uint.preencode(state, m.length)
+    state.end++ // flags are fixed size
+  },
+  encode(state, m) {
+    const flags = m.activated ? 1 : 0
+
+    c.fixed32.encode(state, m.key)
+    c.uint.encode(state, m.length)
+    c.uint8.encode(state, flags)
+  },
+  decode(state) {
+    const r0 = c.fixed32.decode(state)
+    const r1 = c.uint.decode(state)
+    const flags = c.uint8.decode(state)
+
+    return {
+      key: r0,
+      length: r1,
+      activated: (flags & 1) !== 0
+    }
+  }
+}
+
+// @blind-peer/add-cores-response.cores
+const encoding4_0 = c.array(encoding3)
+
+// @blind-peer/add-cores-response
+const encoding4 = {
+  preencode(state, m) {
+    encoding4_0.preencode(state, m.cores)
+  },
+  encode(state, m) {
+    encoding4_0.encode(state, m.cores)
+  },
+  decode(state) {
+    const r0 = encoding4_0.decode(state)
+
+    return {
+      cores: r0
+    }
+  }
+}
+
+// @blind-peer/error
+const encoding5 = {
+  preencode(state, m) {
+    c.uint.preencode(state, m.code)
+  },
+  encode(state, m) {
+    c.uint.encode(state, m.code)
+  },
+  decode(state) {
+    const r0 = c.uint.decode(state)
+
+    return {
+      code: r0
+    }
+  }
+}
+
 function setVersion(v) {
   version = v
 }
@@ -124,6 +188,12 @@ function getEncoding(name) {
       return encoding1
     case '@blind-peer/handshake':
       return encoding2
+    case '@blind-peer/core-response':
+      return encoding3
+    case '@blind-peer/add-cores-response':
+      return encoding4
+    case '@blind-peer/error':
+      return encoding5
     default:
       throw new Error('Encoder not found ' + name)
   }
