@@ -3,6 +3,7 @@ const { BlindPeerRequest: NotificationRequest } = require('blind-push/encodings'
 const Protomux = require('protomux')
 const ProtomuxRequest = require('protomux-request')
 const c = require('compact-encoding')
+const BlindPeerMuxerError = require('./lib/errors')
 
 const Cores = getEncoding('@blind-peer/cores')
 const AddCoresResponse = getEncoding('@blind-peer/add-cores-response')
@@ -108,19 +109,25 @@ module.exports = class BlindPeerChannel {
   }
 }
 
+const ERROR_VERSION = 0
+
 // Thrown values are sent as { code: uint }, decoded back to an Error with the string code
 const ErrorEncoding = {
   preencode(state, err) {
-    return RemoteError.preencode(state, { code: encodeErrorCode(err) })
+    c.uint.preencode(state, ERROR_VERSION)
+    RemoteError.preencode(state, { code: encodeErrorCode(err) })
   },
   encode(state, err) {
-    return RemoteError.encode(state, { code: encodeErrorCode(err) })
+    c.uint.encode(state, ERROR_VERSION)
+    RemoteError.encode(state, { code: encodeErrorCode(err) })
   },
   decode(state) {
+    const version = c.uint.decode(state)
+    if (version !== ERROR_VERSION) {
+      throw BlindPeerMuxerError.UNSUPPORTED_ERROR_VERSION(version)
+    }
     const code = decodeErrorCode(RemoteError.decode(state).code)
-    const err = new Error(`${code}: Remote request failed`)
-    err.code = code
-    return err
+    return BlindPeerMuxerError.REMOTE_REQUEST_FAILED(code)
   }
 }
 
@@ -142,7 +149,7 @@ function encodeErrorCode(err) {
       return 7
     default:
       // throw so protomux-request can close the channel on unknown errors
-      throw new Error('unknown error')
+      throw BlindPeerMuxerError.UNHANDLED_ERROR(err)
   }
 }
 
