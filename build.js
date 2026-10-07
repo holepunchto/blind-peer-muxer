@@ -64,7 +64,6 @@ blind.register({
 
 blind.register({
   name: 'core-response',
-  compact: true,
   fields: [
     {
       name: 'key',
@@ -98,7 +97,6 @@ blind.register({
 
 blind.register({
   name: 'error',
-  compact: true,
   fields: [
     {
       name: 'code',
