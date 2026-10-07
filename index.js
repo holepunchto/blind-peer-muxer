@@ -32,15 +32,27 @@ module.exports = class BlindPeerChannel {
       messages: [
         {
           encoding: Cores,
-          onmessage: (req) =>
-            // temporary hack to ensure blind-peer closes the connection on unknown errors only
-            oncores?.(req).catch((error) => c.encode(ErrorEncoding, error))
+          // temporary hack to ensure blind-peer closes the connection on unknown errors only
+          onmessage: async (req) => {
+            if (!oncores) return
+            try {
+              await oncores(req)
+            } catch (error) {
+              c.encode(ErrorEncoding, error)
+            }
+          }
         },
         {
           encoding: NotificationRequest,
-          onmessage: (req) =>
-            //temporary hack to ensure blind-peer closes the connection on unknown errors only
-            onnotification?.(req).catch((error) => c.encode(ErrorEncoding, error))
+          // temporary hack to ensure blind-peer closes the connection on unknown errors only
+          onmessage: async (req) => {
+            if (!onnotification) return
+            try {
+              await onnotification(req)
+            } catch (error) {
+              c.encode(ErrorEncoding, error)
+            }
+          }
         }
       ],
       onopen: onopen ?? noop,
