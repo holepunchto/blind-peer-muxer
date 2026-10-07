@@ -100,19 +100,19 @@ const encoding3 = {
   preencode(state, m) {
     c.fixed32.preencode(state, m.key)
     c.uint.preencode(state, m.length)
-    state.end++ // flags are fixed size
+    state.end++ // max flag is 1 so always one byte
   },
   encode(state, m) {
     const flags = m.activated ? 1 : 0
 
     c.fixed32.encode(state, m.key)
     c.uint.encode(state, m.length)
-    c.uint8.encode(state, flags)
+    c.uint.encode(state, flags)
   },
   decode(state) {
     const r0 = c.fixed32.decode(state)
     const r1 = c.uint.decode(state)
-    const flags = c.uint8.decode(state)
+    const flags = c.uint.decode(state)
 
     return {
       key: r0,
@@ -123,7 +123,7 @@ const encoding3 = {
 }
 
 // @blind-peer/add-cores-response.cores
-const encoding4_0 = c.array(encoding3)
+const encoding4_0 = c.array(c.frame(encoding3))
 
 // @blind-peer/add-cores-response
 const encoding4 = {
