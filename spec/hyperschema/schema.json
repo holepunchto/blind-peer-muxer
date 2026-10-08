@@ -75,7 +75,7 @@
       ]
     },
     {
-      "name": "core-response",
+      "name": "core-response-v1",
       "namespace": "blind-peer",
       "compact": false,
       "flagsPosition": 2,
@@ -101,7 +101,7 @@
       ]
     },
     {
-      "name": "add-cores-response",
+      "name": "add-cores-response-v1",
       "namespace": "blind-peer",
       "compact": false,
       "flagsPosition": -1,
@@ -110,13 +110,25 @@
           "name": "cores",
           "required": true,
           "array": true,
-          "type": "@blind-peer/core-response",
+          "type": "@blind-peer/core-response-v1",
           "version": 1
         }
       ]
     },
     {
-      "name": "error",
+      "name": "add-cores-response",
+      "namespace": "blind-peer",
+      "framed": true,
+      "versions": [
+        {
+          "type": "@blind-peer/add-cores-response-v1",
+          "map": null,
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "error-v1",
       "namespace": "blind-peer",
       "compact": false,
       "flagsPosition": -1,
@@ -125,6 +137,18 @@
           "name": "code",
           "required": true,
           "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "error",
+      "namespace": "blind-peer",
+      "framed": true,
+      "versions": [
+        {
+          "type": "@blind-peer/error-v1",
+          "map": null,
           "version": 1
         }
       ]

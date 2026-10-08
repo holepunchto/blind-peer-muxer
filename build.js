@@ -63,7 +63,7 @@ blind.register({
 })
 
 blind.register({
-  name: 'core-response',
+  name: 'core-response-v1',
   fields: [
     {
       name: 'key',
@@ -84,11 +84,11 @@ blind.register({
 })
 
 blind.register({
-  name: 'add-cores-response',
+  name: 'add-cores-response-v1',
   fields: [
     {
       name: 'cores',
-      type: '@blind-peer/core-response',
+      type: '@blind-peer/core-response-v1',
       array: true,
       required: true
     }
@@ -96,12 +96,32 @@ blind.register({
 })
 
 blind.register({
-  name: 'error',
+  name: 'add-cores-response',
+  versions: [
+    {
+      version: 1,
+      type: '@blind-peer/add-cores-response-v1'
+    }
+  ]
+})
+
+blind.register({
+  name: 'error-v1',
   fields: [
     {
       name: 'code',
       type: 'uint',
       required: true
+    }
+  ]
+})
+
+blind.register({
+  name: 'error',
+  versions: [
+    {
+      version: 1,
+      type: '@blind-peer/error-v1'
     }
   ]
 })

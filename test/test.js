@@ -77,7 +77,7 @@ test('requestAddCores resolves with the peer response', async function (t) {
     }
   })
 
-  t.alike(await sender.requestAddCores(cores), response)
+  t.alike(await sender.requestAddCores(cores), { version: 1, ...response })
 })
 
 test('requestSendNotification resolves once handled by peer', async function (t) {

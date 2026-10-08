@@ -95,7 +95,7 @@ const encoding2 = {
   }
 }
 
-// @blind-peer/core-response
+// @blind-peer/core-response-v1
 const encoding3 = {
   preencode(state, m) {
     c.fixed32.preencode(state, m.key)
@@ -122,10 +122,10 @@ const encoding3 = {
   }
 }
 
-// @blind-peer/add-cores-response.cores
+// @blind-peer/add-cores-response-v1.cores
 const encoding4_0 = c.array(c.frame(encoding3))
 
-// @blind-peer/add-cores-response
+// @blind-peer/add-cores-response-v1
 const encoding4 = {
   preencode(state, m) {
     encoding4_0.preencode(state, m.cores)
@@ -137,13 +137,56 @@ const encoding4 = {
     const r0 = encoding4_0.decode(state)
 
     return {
+      version: 0,
       cores: r0
     }
   }
 }
 
-// @blind-peer/error
+const encoding5_0 = c.frame(encoding4) // framed version
+// @blind-peer/add-cores-response
 const encoding5 = {
+  preencode(state, m) {
+    const v = m.version ?? 1
+    c.uint.preencode(state, v)
+    switch (v) {
+      case 0:
+      case 1:
+        encoding5_0.preencode(state, m)
+        break
+      default:
+        throw new Error('Unsupported version')
+    }
+  },
+  encode(state, m) {
+    const v = m.version ?? 1
+    c.uint.encode(state, v)
+    switch (v) {
+      case 0:
+      case 1:
+        encoding5_0.encode(state, m)
+        break
+      default:
+        throw new Error('Unsupported version')
+    }
+  },
+  decode(state) {
+    const v = c.uint.decode(state)
+    switch (v) {
+      case 0:
+      case 1: {
+        const decoded = encoding5_0.decode(state)
+        decoded.version = v
+        return decoded
+      }
+      default:
+        throw new Error('Unsupported version')
+    }
+  }
+}
+
+// @blind-peer/error-v1
+const encoding6 = {
   preencode(state, m) {
     c.uint.preencode(state, m.code)
   },
@@ -154,7 +197,50 @@ const encoding5 = {
     const r0 = c.uint.decode(state)
 
     return {
+      version: 0,
       code: r0
+    }
+  }
+}
+
+const encoding7_0 = c.frame(encoding6) // framed version
+// @blind-peer/error
+const encoding7 = {
+  preencode(state, m) {
+    const v = m.version ?? 1
+    c.uint.preencode(state, v)
+    switch (v) {
+      case 0:
+      case 1:
+        encoding7_0.preencode(state, m)
+        break
+      default:
+        throw new Error('Unsupported version')
+    }
+  },
+  encode(state, m) {
+    const v = m.version ?? 1
+    c.uint.encode(state, v)
+    switch (v) {
+      case 0:
+      case 1:
+        encoding7_0.encode(state, m)
+        break
+      default:
+        throw new Error('Unsupported version')
+    }
+  },
+  decode(state) {
+    const v = c.uint.decode(state)
+    switch (v) {
+      case 0:
+      case 1: {
+        const decoded = encoding7_0.decode(state)
+        decoded.version = v
+        return decoded
+      }
+      default:
+        throw new Error('Unsupported version')
     }
   }
 }
@@ -188,12 +274,16 @@ function getEncoding(name) {
       return encoding1
     case '@blind-peer/handshake':
       return encoding2
-    case '@blind-peer/core-response':
+    case '@blind-peer/core-response-v1':
       return encoding3
-    case '@blind-peer/add-cores-response':
+    case '@blind-peer/add-cores-response-v1':
       return encoding4
-    case '@blind-peer/error':
+    case '@blind-peer/add-cores-response':
       return encoding5
+    case '@blind-peer/error-v1':
+      return encoding6
+    case '@blind-peer/error':
+      return encoding7
     default:
       throw new Error('Encoder not found ' + name)
   }

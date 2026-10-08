@@ -121,23 +121,15 @@ module.exports = class BlindPeerChannel {
   }
 }
 
-const ERROR_VERSION = 0
-
 // Thrown values are sent as { code: uint }, decoded back to an Error with the string code
 const ErrorEncoding = {
   preencode(state, err) {
-    c.uint.preencode(state, ERROR_VERSION)
     RemoteError.preencode(state, { code: encodeErrorCode(err) })
   },
   encode(state, err) {
-    c.uint.encode(state, ERROR_VERSION)
     RemoteError.encode(state, { code: encodeErrorCode(err) })
   },
   decode(state) {
-    const version = c.uint.decode(state)
-    if (version !== ERROR_VERSION) {
-      throw BlindPeerMuxerError.UNSUPPORTED_ERROR_VERSION(version)
-    }
     const code = decodeErrorCode(RemoteError.decode(state).code)
     return BlindPeerMuxerError.REMOTE_REQUEST_FAILED(code)
   }
