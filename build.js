@@ -62,4 +62,68 @@ blind.register({
   ]
 })
 
+blind.register({
+  name: 'core-response-v1',
+  fields: [
+    {
+      name: 'key',
+      type: 'fixed32',
+      required: true
+    },
+    {
+      name: 'length',
+      type: 'uint',
+      required: true
+    },
+    {
+      name: 'activated',
+      type: 'bool',
+      required: true
+    }
+  ]
+})
+
+blind.register({
+  name: 'add-cores-response-v1',
+  fields: [
+    {
+      name: 'cores',
+      type: '@blind-peer/core-response-v1',
+      array: true,
+      required: true
+    }
+  ]
+})
+
+blind.register({
+  name: 'add-cores-response',
+  versions: [
+    {
+      version: 1,
+      type: '@blind-peer/add-cores-response-v1'
+    }
+  ]
+})
+
+blind.register({
+  name: 'error-v1',
+  fields: [
+    {
+      name: 'code',
+      type: 'uint',
+      required: true
+    }
+  ]
+})
+
+blind.register({
+  name: 'error',
+  versions: [
+    {
+      version: 1,
+      type: '@blind-peer/error-v1'
+    }
+  ]
+})
+
 Hyperschema.toDisk(schema)
