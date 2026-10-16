@@ -65,24 +65,87 @@ const encoding1 = {
   }
 }
 
-// @blind-peer/handshake
+const encoding2_enum = {
+  unknown: 'unknown',
+  android: 'android',
+  darwin: 'darwin',
+  ios: 'ios',
+  linux: 'linux',
+  win32: 'win32'
+}
+
+// @blind-peer/os-platform enum
 const encoding2 = {
   preencode(state, m) {
-    state.end++ // max flag is 4 so always one byte
+    state.end++ // max enum is 6 so always one byte
+  },
+  encode(state, m) {
+    switch (m) {
+      case 'unknown':
+        c.uint.encode(state, 1)
+        break
+      case 'android':
+        c.uint.encode(state, 2)
+        break
+      case 'darwin':
+        c.uint.encode(state, 3)
+        break
+      case 'ios':
+        c.uint.encode(state, 4)
+        break
+      case 'linux':
+        c.uint.encode(state, 5)
+        break
+      case 'win32':
+        c.uint.encode(state, 6)
+        break
+      default:
+        throw new Error('Unknown enum')
+    }
+  },
+  decode(state) {
+    switch (c.uint.decode(state)) {
+      case 1:
+        return 'unknown'
+      case 2:
+        return 'android'
+      case 3:
+        return 'darwin'
+      case 4:
+        return 'ios'
+      case 5:
+        return 'linux'
+      case 6:
+        return 'win32'
+      default:
+        return null
+    }
+  }
+}
+
+// @blind-peer/handshake
+const encoding3 = {
+  preencode(state, m) {
+    state.end++ // max flag is 8 so always one byte
 
     if (m.blindPeeringVersion) c.string.preencode(state, m.blindPeeringVersion)
     if (m.clientName) c.string.preencode(state, m.clientName)
     if (m.clientVersion) c.string.preencode(state, m.clientVersion)
+    if (m.osPlatform) encoding2.preencode(state, m.osPlatform)
   },
   encode(state, m) {
     const flags =
-      (m.blindPeeringVersion ? 1 : 0) | (m.clientName ? 2 : 0) | (m.clientVersion ? 4 : 0)
+      (m.blindPeeringVersion ? 1 : 0) |
+      (m.clientName ? 2 : 0) |
+      (m.clientVersion ? 4 : 0) |
+      (m.osPlatform ? 8 : 0)
 
     c.uint.encode(state, flags)
 
     if (m.blindPeeringVersion) c.string.encode(state, m.blindPeeringVersion)
     if (m.clientName) c.string.encode(state, m.clientName)
     if (m.clientVersion) c.string.encode(state, m.clientVersion)
+    if (m.osPlatform) encoding2.encode(state, m.osPlatform)
   },
   decode(state) {
     const flags = c.uint.decode(state)
@@ -90,13 +153,14 @@ const encoding2 = {
     return {
       blindPeeringVersion: (flags & 1) !== 0 ? c.string.decode(state) : null,
       clientName: (flags & 2) !== 0 ? c.string.decode(state) : null,
-      clientVersion: (flags & 4) !== 0 ? c.string.decode(state) : null
+      clientVersion: (flags & 4) !== 0 ? c.string.decode(state) : null,
+      osPlatform: (flags & 8) !== 0 ? encoding2.decode(state) : null
     }
   }
 }
 
 // @blind-peer/core-response-v1
-const encoding3 = {
+const encoding4 = {
   preencode(state, m) {
     c.fixed32.preencode(state, m.key)
     c.uint.preencode(state, m.length)
@@ -123,18 +187,18 @@ const encoding3 = {
 }
 
 // @blind-peer/add-cores-response-v1.cores
-const encoding4_0 = c.array(c.frame(encoding3))
+const encoding5_0 = c.array(c.frame(encoding4))
 
 // @blind-peer/add-cores-response-v1
-const encoding4 = {
+const encoding5 = {
   preencode(state, m) {
-    encoding4_0.preencode(state, m.cores)
+    encoding5_0.preencode(state, m.cores)
   },
   encode(state, m) {
-    encoding4_0.encode(state, m.cores)
+    encoding5_0.encode(state, m.cores)
   },
   decode(state) {
-    const r0 = encoding4_0.decode(state)
+    const r0 = encoding5_0.decode(state)
 
     return {
       version: 0,
@@ -143,16 +207,16 @@ const encoding4 = {
   }
 }
 
-const encoding5_0 = c.frame(encoding4) // framed version
+const encoding6_0 = c.frame(encoding5) // framed version
 // @blind-peer/add-cores-response
-const encoding5 = {
+const encoding6 = {
   preencode(state, m) {
     const v = m.version ?? 1
     c.uint.preencode(state, v)
     switch (v) {
       case 0:
       case 1:
-        encoding5_0.preencode(state, m)
+        encoding6_0.preencode(state, m)
         break
       default:
         throw new Error('Unsupported version')
@@ -164,7 +228,7 @@ const encoding5 = {
     switch (v) {
       case 0:
       case 1:
-        encoding5_0.encode(state, m)
+        encoding6_0.encode(state, m)
         break
       default:
         throw new Error('Unsupported version')
@@ -175,7 +239,7 @@ const encoding5 = {
     switch (v) {
       case 0:
       case 1: {
-        const decoded = encoding5_0.decode(state)
+        const decoded = encoding6_0.decode(state)
         decoded.version = v
         return decoded
       }
@@ -186,7 +250,7 @@ const encoding5 = {
 }
 
 // @blind-peer/error-v1
-const encoding6 = {
+const encoding7 = {
   preencode(state, m) {
     c.uint.preencode(state, m.code)
   },
@@ -203,16 +267,16 @@ const encoding6 = {
   }
 }
 
-const encoding7_0 = c.frame(encoding6) // framed version
+const encoding8_0 = c.frame(encoding7) // framed version
 // @blind-peer/error
-const encoding7 = {
+const encoding8 = {
   preencode(state, m) {
     const v = m.version ?? 1
     c.uint.preencode(state, v)
     switch (v) {
       case 0:
       case 1:
-        encoding7_0.preencode(state, m)
+        encoding8_0.preencode(state, m)
         break
       default:
         throw new Error('Unsupported version')
@@ -224,7 +288,7 @@ const encoding7 = {
     switch (v) {
       case 0:
       case 1:
-        encoding7_0.encode(state, m)
+        encoding8_0.encode(state, m)
         break
       default:
         throw new Error('Unsupported version')
@@ -235,7 +299,7 @@ const encoding7 = {
     switch (v) {
       case 0:
       case 1: {
-        const decoded = encoding7_0.decode(state)
+        const decoded = encoding8_0.decode(state)
         decoded.version = v
         return decoded
       }
@@ -261,6 +325,8 @@ function decode(name, buffer, v = VERSION) {
 
 function getEnum(name) {
   switch (name) {
+    case '@blind-peer/os-platform':
+      return encoding2_enum
     default:
       throw new Error('Enum not found ' + name)
   }
@@ -272,18 +338,20 @@ function getEncoding(name) {
       return encoding0
     case '@blind-peer/cores':
       return encoding1
-    case '@blind-peer/handshake':
+    case '@blind-peer/os-platform':
       return encoding2
-    case '@blind-peer/core-response-v1':
+    case '@blind-peer/handshake':
       return encoding3
-    case '@blind-peer/add-cores-response-v1':
+    case '@blind-peer/core-response-v1':
       return encoding4
-    case '@blind-peer/add-cores-response':
+    case '@blind-peer/add-cores-response-v1':
       return encoding5
-    case '@blind-peer/error-v1':
+    case '@blind-peer/add-cores-response':
       return encoding6
-    case '@blind-peer/error':
+    case '@blind-peer/error-v1':
       return encoding7
+    case '@blind-peer/error':
+      return encoding8
     default:
       throw new Error('Encoder not found ' + name)
   }

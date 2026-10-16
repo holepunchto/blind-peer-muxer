@@ -1,9 +1,10 @@
-const { getEncoding } = require('./spec/hyperschema')
+const { getEncoding, getEnum } = require('./spec/hyperschema')
 const { BlindPeerRequest: NotificationRequest } = require('blind-push/encodings')
 const Protomux = require('protomux')
 const ProtomuxRequest = require('protomux-request')
 const c = require('compact-encoding')
 const BlindPeerMuxerError = require('./lib/errors')
+const OS_PLATFORMS = getEnum('@blind-peer/os-platform')
 
 const Cores = getEncoding('@blind-peer/cores')
 const AddCoresResponse = getEncoding('@blind-peer/add-cores-response')
@@ -15,7 +16,11 @@ const Handshake = getEncoding('@blind-peer/handshake')
 // This way there is no need to handle special null states by blind-peer-muxer users.
 const HandshakeWrapped = {
   preencode: Handshake.preencode,
-  encode: Handshake.encode,
+  encode(state, m) {
+    // osPlatform is set but not recognized, default to 'unknown' instead of throwing
+    if (m.osPlatform) m.osPlatform = OS_PLATFORMS[m.osPlatform] ?? OS_PLATFORMS.unknown
+    Handshake.encode(state, m)
+  },
   decode(state) {
     return state.start >= state.end
       ? Handshake.decode({ buffer: Buffer.alloc(1), start: 0, end: 1 })

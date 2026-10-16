@@ -52,6 +52,38 @@
       ]
     },
     {
+      "name": "os-platform",
+      "namespace": "blind-peer",
+      "offset": 1,
+      "enum": [
+        {
+          "key": "unknown",
+          "version": 1
+        },
+        {
+          "key": "android",
+          "version": 1
+        },
+        {
+          "key": "darwin",
+          "version": 1
+        },
+        {
+          "key": "ios",
+          "version": 1
+        },
+        {
+          "key": "linux",
+          "version": 1
+        },
+        {
+          "key": "win32",
+          "version": 1
+        }
+      ],
+      "strings": true
+    },
+    {
       "name": "handshake",
       "namespace": "blind-peer",
       "compact": false,
@@ -70,6 +102,11 @@
         {
           "name": "clientVersion",
           "type": "string",
+          "version": 1
+        },
+        {
+          "name": "osPlatform",
+          "type": "@blind-peer/os-platform",
           "version": 1
         }
       ]
