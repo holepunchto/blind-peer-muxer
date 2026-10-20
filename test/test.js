@@ -108,7 +108,8 @@ test('handshake is stored on the channel', async function (t) {
   const receiverHandshake = {
     blindPeeringVersion: '3.2.1',
     clientName: 'receiver',
-    clientVersion: '2.2.2'
+    clientVersion: '2.2.2',
+    osPlatform: 'linux'
   }
 
   const [sender, receiver] = setupMuxerPair({ senderHandshake, receiverHandshake })
@@ -130,6 +131,18 @@ test('handshake defaults when neither side sends it', async function (t) {
   t.alike(sender.channel.handshake, defaultHandhshake)
   t.ok(await receiver.channel.fullyOpened())
   t.alike(receiver.channel.handshake, defaultHandhshake)
+})
+
+test('not recognized osPlatform values are set as unknown instead of throwing', async function (t) {
+  const [sender, receiver] = setupMuxerPair({
+    senderHandshake: { osPlatform: 'sunos' },
+    receiverHandshake: { osPlatform: 'linux' }
+  })
+
+  t.ok(await sender.channel.fullyOpened())
+  t.is(sender.channel.handshake.osPlatform, 'linux')
+  t.ok(await receiver.channel.fullyOpened())
+  t.is(receiver.channel.handshake.osPlatform, 'unknown', `sunos maps to unknown`)
 })
 
 test('sender without handhshake encoding does not break receiver with a handshake encoding', async function (t) {
@@ -197,4 +210,9 @@ function replicate(a, b) {
   a.rawStream.pipe(b.rawStream).pipe(a.rawStream)
 }
 
-const defaultHandhshake = { blindPeeringVersion: null, clientName: null, clientVersion: null }
+const defaultHandhshake = {
+  blindPeeringVersion: null,
+  clientName: null,
+  clientVersion: null,
+  osPlatform: null
+}

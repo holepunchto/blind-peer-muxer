@@ -44,6 +44,13 @@ blind.register({
   ]
 })
 
+// bare-os.platform() values, plus unknown for anything else
+blind.register({
+  name: 'os-platform',
+  strings: true,
+  enum: ['unknown', 'android', 'darwin', 'ios', 'linux', 'win32']
+})
+
 blind.register({
   name: 'handshake',
   fields: [
@@ -58,6 +65,10 @@ blind.register({
     {
       name: 'clientVersion',
       type: 'string'
+    },
+    {
+      name: 'osPlatform',
+      type: '@blind-peer/os-platform'
     }
   ]
 })
