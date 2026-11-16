@@ -40,7 +40,8 @@ test('sendNotification is received by peer', function (t) {
       discoveryKey: b4a.from('destination-discovery-key')
     },
     appId: null,
-    extra: null
+    extra: null,
+    upgradeLength: 0
   }
 
   const [sender] = setupMuxerPair({
@@ -91,7 +92,8 @@ test('requestSendNotification resolves once handled by peer', async function (t)
       discoveryKey: b4a.from('destination-discovery-key')
     },
     appId: null,
-    extra: null
+    extra: null,
+    upgradeLength: 0
   }
 
   const [sender] = setupMuxerPair({
