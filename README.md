@@ -1,7 +1,5 @@
 # blind-peer-muxer
 
-WIP - nothing to see here
-
 ```
 npm install blind-peer-muxer
 ```
