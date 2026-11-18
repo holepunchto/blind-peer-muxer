@@ -41,13 +41,13 @@ test('sendNotification is received by peer', function (t) {
       discoveryKey: b4a.from('destination-discovery-key')
     },
     appId: null,
-    extra: null,
-    upgradeLength: 0
+    extra: null
   }
 
   const [sender] = setupMuxerPair({
     async onnotification(data) {
-      t.alike(data, notification)
+      // the deprecated upgradeLength is still in the schema, so it always decodes, as 0 when unset
+      t.alike(data, { ...notification, upgradeLength: 0 })
     }
   })
 
@@ -87,20 +87,19 @@ test('requestSendNotification resolves once handled by peer', async function (t)
     block: {
       key: b4a.alloc(32, 4),
       index: 7,
-      upgrade: null
+      upgrade: { start: 0, length: 6 }
     },
     destination: {
       key: b4a.alloc(32, 5),
       discoveryKey: b4a.from('destination-discovery-key')
     },
     appId: null,
-    extra: null,
-    upgradeLength: 0
+    extra: null
   }
 
   const [sender] = setupMuxerPair({
     async onnotification(data) {
-      t.alike(data, notification)
+      t.alike(data, { ...notification, upgradeLength: 0 })
       return { length: 8 }
     }
   })
