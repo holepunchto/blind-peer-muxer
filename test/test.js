@@ -33,7 +33,8 @@ test('sendNotification is received by peer', function (t) {
   const notification = {
     block: {
       key: b4a.alloc(32, 4),
-      index: 7
+      index: 7,
+      upgrade: null
     },
     destination: {
       key: b4a.alloc(32, 5),
@@ -85,7 +86,8 @@ test('requestSendNotification resolves once handled by peer', async function (t)
   const notification = {
     block: {
       key: b4a.alloc(32, 4),
-      index: 7
+      index: 7,
+      upgrade: null
     },
     destination: {
       key: b4a.alloc(32, 5),
@@ -99,10 +101,13 @@ test('requestSendNotification resolves once handled by peer', async function (t)
   const [sender] = setupMuxerPair({
     async onnotification(data) {
       t.alike(data, notification)
+      return { length: 8 }
     }
   })
 
-  t.is(await sender.requestSendNotification(notification), null)
+  const res = await sender.requestSendNotification(notification)
+
+  t.alike(res, { length: 8 })
 })
 
 test('handshake is stored on the channel', async function (t) {
