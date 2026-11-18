@@ -1,5 +1,8 @@
 const { getEncoding, getEnum } = require('./spec/hyperschema')
-const { BlindPeerRequest: NotificationRequest } = require('blind-push/encodings')
+const {
+  BlindPeerRequest: NotificationRequest,
+  BlindPeerResponse: NotificationResponse
+} = require('blind-push/encodings')
 const Protomux = require('protomux')
 const ProtomuxRequest = require('protomux-request')
 const c = require('compact-encoding')
@@ -8,7 +11,6 @@ const OS_PLATFORMS = getEnum('@blind-peer/os-platform')
 
 const Cores = getEncoding('@blind-peer/cores')
 const AddCoresResponse = getEncoding('@blind-peer/add-cores-response')
-const NotificationResponse = c.none
 const RemoteError = getEncoding('@blind-peer/error')
 const Handshake = getEncoding('@blind-peer/handshake')
 // The wrapper makes it work seamlessly if the other side does not have a handshake
